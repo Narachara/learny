@@ -1,0 +1,766 @@
+/* ==========================================================================
+   CSS Custom Properties
+   ========================================================================== */
+
+:root {
+    /* Ink, paper and mineral pigments — the nighttime study room. */
+    --color-primary:        #b64b3a;
+    --color-primary-dark:   #d46a54;
+    --color-primary-shadow: rgba(182, 75, 58, 0.30);
+
+    /* Semantic */
+    --color-success:        #789466;
+    --color-danger:         #d96b5f;
+    --color-danger-bg:      rgba(217, 107, 95, 0.15);
+    --color-danger-bg-hover:rgba(217, 107, 95, 0.25);
+    --color-danger-text:    #f4aaa0;
+
+    --color-text:           #f4efe2;
+    --color-text-secondary: #ddd5c4;
+    --color-text-muted:     #a9a392;
+    --color-border:         #4b5148;
+    --color-bg:             #20261f;
+    --color-bg-subtle:      #293129;
+    --color-bg-muted:       #343c32;
+    --color-bg-hover:       #414b3e;
+
+    /* Tag chips — a muted leaf tint that remains legible in both themes. */
+    --tag-chip-bg:       rgba(167, 183, 129, 0.14);
+    --tag-chip-bg-hover: rgba(167, 183, 129, 0.25);
+    --tag-chip-text:     #cbd6a9;
+
+    /* Radii */
+    --radius-sm:   3px;
+    --radius-md:   5px;
+    --radius-lg:   9px;
+    --radius-xl:   14px;
+    --radius-pill: 999px;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(5, 9, 5, 0.22);
+    --shadow-md: 0 10px 24px rgba(5, 9, 5, 0.25);
+    --shadow-lg: 0 22px 54px rgba(5, 9, 5, 0.42);
+
+    /* Spacing */
+    --space-xs:  4px;
+    --space-sm:  8px;
+    --space-md:  16px;
+    --space-lg:  24px;
+    --space-xl:  36px;
+    --space-2xl: 56px;
+
+    /* Page width caps — content grows with the window up to these widths.
+       `--content-max-w` is the roomy default for grid pages (decks, cards),
+       `--reading-max-w` keeps prose-like pages (a single card) readable. */
+    --content-max-w: 1920px;
+    --reading-max-w: 1440px;
+
+    /* Navbar height — used to offset sticky content */
+    --navbar-h: 56px;
+    /* Tab strip height — sits below the navbar */
+    --tab-strip-h: 38px;
+
+    color-scheme: dark;
+}
+
+/* Light theme — the daylight paper palette. Toggled from the navbar by
+   setting data-theme on <html>; only colors change, layout tokens stay. */
+:root[data-theme="light"] {
+    --color-primary:        #a53e31;
+    --color-primary-dark:   #813026;
+    --color-primary-shadow: rgba(165, 62, 49, 0.24);
+
+    /* Semantic */
+    --color-success:        #587748;
+    --color-danger:         #b64a3e;
+    --color-danger-bg:      rgba(182, 74, 62, 0.10);
+    --color-danger-bg-hover:rgba(182, 74, 62, 0.18);
+    --color-danger-text:    #93382f;
+
+    --color-text:           #292c23;
+    --color-text-secondary: #4b5041;
+    --color-text-muted:     #76776b;
+    --color-border:         #d2cbbb;
+    --color-bg:             #f2eedf;
+    --color-bg-subtle:      #fbf8ed;
+    --color-bg-muted:       #e5decc;
+    --color-bg-hover:       #dbd3bf;
+
+    --tag-chip-text:        #536945;
+
+    color-scheme: light;
+}
+
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Form controls don't inherit color by default — make sure typed text is
+   always readable on the dark surfaces rather than falling back to black. */
+input,
+textarea,
+select {
+    color: var(--color-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+body {
+    margin: 0;
+    font-family:
+        "Avenir Next",
+        "Iowan Old Style",
+        "Palatino Linotype",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    padding-bottom: env(safe-area-inset-bottom);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.7;
+    letter-spacing: 0.002em;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+    font-size: clamp(1.75rem, 2.4vw, 2.15rem);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    text-align: center;
+    margin: 0 0 var(--space-xl);
+    color: var(--color-text);
+}
+
+h2 {
+    font-size: 1.24rem;
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: var(--space-xl) 0 var(--space-md);
+    color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   Navbar
+   ========================================================================== */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 110;
+    height: var(--navbar-h);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-xl);
+    background: #24291f;
+    border-bottom: 1px solid rgba(242, 238, 223, 0.18);
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    text-decoration: none;
+    /* Now a <button>: the navbar sits outside the tab routers, so the brand
+       routes the active tab instead of being a link. Strip button chrome. */
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    cursor: pointer;
+    color: #f4efe2;
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.015em;
+    flex: 1;
+}
+
+.navbar-brand:hover {
+    color: #efd9bc;
+}
+
+.navbar-brand-icon {
+    width: 27px;
+    height: 27px;
+    display: inline-grid;
+    place-items: center;
+    border: 3px solid #d7c5a0;
+    border-left-color: transparent;
+    border-radius: 50%;
+    color: transparent;
+    transform: rotate(-28deg);
+    box-shadow: inset 0 0 0 1px rgba(244, 239, 226, 0.5);
+    line-height: 1;
+}
+
+.navbar-end {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.navbar-icon-btn {
+    color: #d9d2bf;
+}
+
+.navbar-user {
+    font-size: 0.82rem;
+    color: #bdb7a6;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   Browser-style tab strip (each tab is a full app instance)
+   ========================================================================== */
+
+.tab-strip {
+    position: sticky;
+    top: var(--navbar-h);
+    z-index: 100;
+    height: var(--tab-strip-h);
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    padding: 5px var(--space-xl) 5px;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    overflow-x: auto;
+}
+
+.tab-strip-new {
+    align-self: center;
+    margin-left: 4px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    line-height: 1;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    flex: none;
+}
+
+.tab-strip-new:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-text);
+}
+
+.tab-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 200px;
+    padding: 5px 10px 5px 12px;
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    font-size: 0.84rem;
+    font-weight: 560;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.tab-item:hover {
+    background: var(--color-bg-muted);
+    color: var(--color-text-secondary);
+}
+
+.tab-item-active {
+    background: var(--color-primary);
+    color: var(--color-text);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+}
+
+:root[data-theme="light"] .tab-item-active { color: #fffaf0; }
+
+.page,
+.card-list-page,
+.card-view,
+.card-editor-page {
+    position: relative;
+    isolation: isolate;
+}
+
+/* A deliberately imperfect ink halo: a quiet signature, not a copied asset. */
+.page::before,
+.card-view::before,
+.card-editor-page::before {
+    content: "";
+    position: absolute;
+    width: 126px;
+    height: 126px;
+    top: -20px;
+    right: 1.5rem;
+    border: 13px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+    border-left-color: transparent;
+    border-bottom-color: color-mix(in srgb, var(--color-success) 13%, transparent);
+    border-radius: 49% 51% 48% 52%;
+    transform: rotate(-22deg);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.tab-item-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Editable name field that looks like plain tab text until focused. */
+    min-width: 0;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+}
+
+.tab-item-label:focus {
+    cursor: text;
+}
+
+.tab-item-label::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.7;
+}
+
+.tab-item-close {
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    line-height: 1;
+    padding: 3px 4px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.tab-item-close:hover {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-text);
+}
+
+/* ==========================================================================
+   Layout utilities
+   ========================================================================== */
+
+.page {
+    max-width: var(--content-max-w);
+    margin: var(--space-xl) auto;
+    padding: 0 var(--space-lg);
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-2xl);
+    color: var(--color-text-muted);
+    font-size: 1rem;
+}
+
+/* ==========================================================================
+   Button system
+   ========================================================================== */
+
+.button {
+    appearance: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: 8px 15px;
+    font-size: 0.875rem;
+    font-weight: 750;
+    letter-spacing: 0.005em;
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    background: var(--color-bg-muted);
+    color: var(--color-text);
+    transition:
+        background  0.15s ease,
+        box-shadow  0.15s ease,
+        transform   0.12s ease,
+        color       0.15s ease;
+    white-space: nowrap;
+}
+
+.button:hover  { background: var(--color-bg-hover); }
+.button:active { transform: translateY(1px); }
+
+/* Variants */
+
+.button-primary {
+    background: var(--color-primary);
+    color:      #ffffff;
+    box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-primary) 34%, transparent);
+}
+
+.button-primary:hover {
+    background: var(--color-primary-dark);
+    transform:  translate(-1px, -1px);
+    box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-primary) 34%, transparent);
+}
+
+.button-secondary {
+    background: var(--color-bg-muted);
+    color:      var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+
+.button-secondary:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-text-muted);
+}
+
+.button-danger {
+    background: var(--color-danger-bg);
+    color:      var(--color-danger-text);
+}
+
+.button-danger:hover { background: var(--color-danger-bg-hover); }
+
+.button-good {
+    background: var(--color-success);
+    color:      #ffffff;
+}
+
+.button-bad {
+    background: var(--color-danger);
+    color:      #ffffff;
+}
+
+/* Size modifiers */
+
+.button-lg {
+    padding:   12px 22px;
+    font-size: 1rem;
+    flex:      1;
+}
+
+.button-sm {
+    padding:   5px 10px;
+    font-size: 0.8rem;
+}
+
+.button-xs {
+    padding:   4px 10px;
+    font-size: 0.78rem;
+}
+
+.button-full {
+    width:     100%;
+    padding:   14px 20px;
+    font-size: 1.05rem;
+    margin-top: var(--space-xl);
+}
+
+/* ==========================================================================
+   Icon button system
+   ========================================================================== */
+
+.icon-btn {
+    appearance: none;
+    border: 1px solid color-mix(in srgb, var(--color-border) 82%, var(--color-text) 18%);
+    background: color-mix(in srgb, var(--color-bg-subtle) 82%, transparent);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.icon-btn:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: rotate(-4deg);
+}
+
+.icon-btn.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fffaf0;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid var(--color-primary-shadow);
+    outline-offset: 2px;
+}
+
+.icon-btn.danger:hover {
+    background: var(--color-danger-bg-hover);
+    color: var(--color-danger-text);
+}
+
+.icon-btn.primary:hover {
+    background: var(--color-primary-shadow);
+    color: var(--color-primary-dark);
+}
+
+/* Larger icon button for prominent actions */
+.icon-btn-lg {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Rating circles — Good / Bad */
+.rating-btn {
+    appearance: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    transition: transform 0.12s ease, box-shadow 0.15s ease;
+    flex-shrink: 0;
+}
+
+.rating-btn:active { transform: scale(0.93); }
+
+.rating-btn-good {
+    background: rgba(65, 193, 132, 0.14);
+    color: #5fd6a0;
+    border-color: rgba(65, 193, 132, 0.35);
+}
+
+.rating-btn-good:hover {
+    background: rgba(65, 193, 132, 0.22);
+    border-color: #41c184;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(65, 193, 132, 0.25);
+}
+
+.rating-btn-bad {
+    background: rgba(236, 100, 100, 0.14);
+    color: #f1908f;
+    border-color: rgba(236, 100, 100, 0.35);
+}
+
+.rating-btn-bad:hover {
+    background: rgba(236, 100, 100, 0.22);
+    border-color: #ec6464;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 100, 100, 0.22);
+}
+
+/* ==========================================================================
+   Shared dialog / confirm overlay
+   ========================================================================== */
+
+.dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    animation: dialog-fade-in 0.12s ease-out;
+}
+
+@keyframes dialog-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.dialog {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl) var(--space-xl);
+    max-width: 400px;
+    width: 90%;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    animation: dialog-slide-in 0.14s ease-out;
+}
+
+@keyframes dialog-slide-in {
+    from { opacity: 0; transform: translateY(6px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)  scale(1); }
+}
+
+.dialog-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-text);
+}
+
+.dialog-body {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.55;
+}
+
+.dialog-input {
+    padding: 10px var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    font-size: 1rem;
+    background: var(--color-bg);
+    color: var(--color-text);
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dialog-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-shadow);
+}
+
+.dialog-actions {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: flex-end;
+    margin-top: var(--space-xs);
+}
+
+/* ==========================================================================
+   Responsive — tablets & phones
+   ==========================================================================
+
+   All typography is rem-based off the root font size, so shrinking the root
+   scales the whole UI down proportionally. We also tighten the spacing scale
+   and collapse a few desktop-oriented two-column layouts.
+*/
+
+@media (max-width: 640px) {
+    :root {
+        /* 15px root → ~6% smaller text everywhere */
+        font-size: 93.75%;
+
+        /* Tighter spacing scale for narrow screens */
+        --space-lg:  18px;
+        --space-xl:  24px;
+        --space-2xl: 36px;
+
+        --navbar-h: 50px;
+    }
+
+    h1 { font-size: 1.5rem;  margin-bottom: var(--space-lg); }
+    h2 { font-size: 1.1rem; }
+
+    .navbar      { padding: 0 var(--space-md); }
+    .navbar-end  { gap: var(--space-sm); }
+
+    .page,
+    .session-page,
+    .card-view,
+    .card-list-page {
+        margin-top: var(--space-md);
+        padding: 0 var(--space-md);
+    }
+
+    /* Stack the Easy / Difficult note panels vertically */
+    .card-notes { grid-template-columns: 1fr; }
+
+    /* Smaller rating circles + tighter gap so both fit a phone width */
+    .rating-btn  { width: 60px; height: 60px; font-size: 1.5rem; }
+    .card-rating { gap: var(--space-lg); }
+
+    .session-card-title,
+    .card-topbar .card-title { font-size: 1.2rem; }
+
+    .session-complete h2 { font-size: 1.6rem; }
+
+    /* ----------------------------------------------------------------------
+       Read-only mobile mode
+
+       Phones get a viewer, not a workbench: everything that creates, edits,
+       moves, deletes or imports content is marked `.desktop-only` in the RSX
+       and collapses here. What survives is navigation (decks → cards → card),
+       search, the tag filter, and studying. The trigger is hidden rather than
+       the panel it opens, so no mutating dialog is reachable at all.
+       ---------------------------------------------------------------------- */
+
+    .desktop-only { display: none !important; }
+
+    /* The toolbars lose most of their buttons — let the survivors wrap and
+       give the search field the full width it now has room for. */
+    .cardlist-toolbar {
+        flex-wrap: wrap;
+        row-gap: var(--space-xs);
+    }
+
+    .cardlist-search-input {
+        order: 10;
+        flex: 1 0 100%;
+        max-width: none;
+    }
+
+    .cardlist-toolbar-right {
+        /* Session mode picker + play button only; keep them on one row. */
+        gap: var(--space-xs);
+    }
+
+    .card-topbar { flex-wrap: wrap; }
+
+    /* The deck card is now a single tap target: cover + name, nothing else. */
+    .deck-card .deck-main { padding-bottom: var(--space-sm); }
+}
+
+@media (max-width: 400px) {
+    :root {
+        /* 14px root for the smallest phones */
+        font-size: 87.5%;
+    }
+
+    .rating-btn  { width: 54px; height: 54px; font-size: 1.35rem; }
+}

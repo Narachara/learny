@@ -1,0 +1,21 @@
+[package]
+name = "learny-mcp"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "learny-mcp"
+path = "src/main.rs"
+
+[dependencies]
+# Official MCP Rust SDK (github.com/modelcontextprotocol/rust-sdk).
+# `schemars` comes from rmcp's re-export, so the derive stays version-matched.
+rmcp = { version = "3.4", features = ["server", "transport-io", "macros", "schemars"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "io-std", "signal"] }
+serde = { version = "1", features = ["derive"] }
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+application = { path = "../application" }
+adapter_sqlite = { path = "../adapters/sqlite" }
+domain_flashcard = { path = "../domain/flashcard" }

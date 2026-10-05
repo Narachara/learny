@@ -1,0 +1,15 @@
+# macOS
+**/.DS_Store
+
+# Local data / scratch
+cards.db
+backup.zip
+learny-backup-*.zip
+build_script.sh
+key
+*/__pycache__
+
+# Personal helper scripts (talk to a private server / local app data)
+pull_db.sh
+backup_local.sh
+.vscode/

@@ -1,0 +1,635 @@
+.km-page {
+    display: flex;
+    flex-direction: column;
+    /* Fill exactly the space below the tab strip + navbar so only the canvas
+       scrolls — the toolbar, deck bar and sidebar stay put. */
+    height: calc(100vh - var(--navbar-h) - var(--tab-strip-h));
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ---- Toolbar ---- */
+.km-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+    flex: 0 0 auto;
+}
+
+.km-modes {
+    display: flex;
+    gap: var(--space-xs);
+    /* Take the space left of the zoom controls and sit centred in it, so the
+       actions read as one group rather than a left-hand pile. */
+    flex: 1;
+    justify-content: center;
+}
+
+.km-mode-btn {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    padding: 0.3rem 0.7rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.km-mode-btn:hover { background: var(--color-bg-hover); }
+.km-mode-active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+.km-mode-danger {
+    color: var(--color-danger);
+}
+.km-mode-danger:hover {
+    background: var(--color-danger-bg);
+    border-color: var(--color-danger);
+}
+
+.km-hint {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+/* ---- Zoom controls (right side of toolbar) ---- */
+.km-zoom {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.km-zoom-btn {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+.km-zoom-btn:hover { background: var(--color-bg-hover); }
+
+.km-zoom-level {
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    min-width: 44px;
+    cursor: pointer;
+}
+.km-zoom-level:hover { color: var(--color-text); }
+
+/* ---- Deck filter bar ---- */
+.km-deckbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+    flex: 0 0 auto;
+}
+
+.km-deck-chip {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    border-radius: var(--radius-pill);
+    padding: 0.22rem 0.7rem;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.km-deck-swatch {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 6px;
+    flex: 0 0 auto;
+}
+.km-deck-chip:hover { background: var(--color-bg-hover); }
+.km-deck-chip-active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+
+.km-deck-clear {
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    cursor: pointer;
+    margin-left: var(--space-xs);
+    text-decoration: underline;
+}
+.km-deck-clear:hover { color: var(--color-text); }
+
+/* ---- Body: canvas + panel ---- */
+.km-body {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* ---- Sidebar: unplaced tags ---- */
+.km-sidebar {
+    flex: 0 0 220px;
+    border-right: 1px solid var(--color-border);
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: var(--space-md);
+}
+
+.km-sidebar-head {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.km-sidebar-search {
+    margin-top: var(--space-sm);
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-subtle);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+}
+.km-sidebar-search:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.km-sidebar-hint {
+    margin: var(--space-xs) 0 var(--space-md);
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+}
+
+.km-sidebar-empty {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+}
+
+.km-sidebar-toggle {
+    display: flex;
+    gap: 2px;
+    margin-bottom: var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 2px;
+}
+.km-seg {
+    flex: 1 1 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    border-radius: calc(var(--radius-md) - 2px);
+    padding: 0.3rem 0.4rem;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+.km-seg:hover { color: var(--color-text); }
+.km-seg-active {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.km-sidebar-create {
+    display: flex;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+}
+.km-sidebar-new {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-subtle);
+    color: var(--color-text);
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+}
+.km-sidebar-new:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+/* Rename dialog input: fill the dialog width and give it a little breathing room. */
+.km-rename-input {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0.4rem 0 0.9rem;
+    font-size: 0.95rem;
+}
+.km-sidebar-add {
+    flex: 0 0 auto;
+    border: 1px solid var(--color-border);
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: var(--radius-md);
+    width: 32px;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+.km-sidebar-add:hover { opacity: 0.9; }
+
+.km-sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.km-sidebar-row {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+}
+
+.km-sidebar-tag {
+    flex: 1 1 auto;
+    text-align: left;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-subtle);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.km-sidebar-tag:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-primary);
+}
+
+.km-sidebar-del {
+    flex: 0 0 auto;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-muted);
+    border-radius: var(--radius-md);
+    width: 28px;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+.km-sidebar-del:hover {
+    background: var(--color-danger-bg);
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+.km-detach-danger {
+    color: var(--color-danger);
+}
+.km-detach-danger:hover {
+    background: var(--color-danger-bg);
+    border-color: var(--color-danger);
+}
+
+.km-canvas-wrap {
+    flex: 1 1 auto;
+    overflow: auto;
+    background:
+        radial-gradient(circle, var(--color-border) 1px, transparent 1px);
+    background-size: 26px 26px;
+    background-color: var(--color-bg-subtle);
+}
+
+.km-empty {
+    padding: var(--space-lg);
+    color: var(--color-text-muted);
+}
+
+.km-canvas {
+    display: block;
+    touch-action: none;
+}
+
+.km-bg {
+    fill: transparent;
+}
+
+.km-edge {
+    fill: none;
+    stroke: var(--color-text-muted);
+    stroke-width: 1.5;
+    opacity: 0.6;
+    transition: opacity 0.12s ease, stroke 0.12s ease;
+}
+
+/* Edges touching the selected node. */
+.km-edge-hl {
+    stroke: var(--color-primary);
+    stroke-width: 2.5;
+    opacity: 1;
+}
+
+/* Edges unrelated to the selection fade back. */
+.km-edge-dim {
+    opacity: 0.12;
+}
+
+.km-arrow-head {
+    fill: var(--color-text-muted);
+    opacity: 0.9;
+}
+.km-arrow-head-hl {
+    fill: var(--color-primary);
+}
+
+/* Nodes unrelated to the selection fade back. */
+.km-node-dim {
+    opacity: 0.28;
+    transition: opacity 0.12s ease;
+}
+
+.km-node {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Ancestor tags pulled in only to keep connections intact under a deck filter. */
+.km-node-ctx {
+    opacity: 0.4;
+}
+.km-node-ctx:hover {
+    opacity: 0.7;
+}
+
+.km-node-rect {
+    fill: var(--color-bg);
+    stroke: var(--color-border);
+    stroke-width: 1.5;
+}
+.km-node:hover .km-node-rect {
+    stroke: var(--color-primary);
+}
+.km-node-selected {
+    fill: var(--color-bg-muted);
+    stroke: var(--color-primary);
+    stroke-width: 2.5;
+}
+.km-node-source {
+    fill: var(--color-primary);
+    stroke: var(--color-primary);
+}
+.km-node-source + .km-node-label,
+.km-node-source ~ .km-node-label { fill: #fff; }
+
+.km-node-label {
+    font-size: 12px;
+    fill: var(--color-text);
+    pointer-events: none;
+    dominant-baseline: middle;
+}
+
+/* Per-deck colour segments along the bottom of a node. */
+.km-node-bar {
+    pointer-events: none;
+    rx: 1;
+}
+
+/* Collapse/expand toggle on nodes with children. */
+.km-collapse-badge {
+    fill: var(--color-bg);
+    stroke: var(--color-border);
+    stroke-width: 1.5;
+    cursor: pointer;
+}
+.km-collapse-badge:hover {
+    stroke: var(--color-primary);
+    fill: var(--color-bg-hover);
+}
+.km-collapse-sign {
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--color-text-muted);
+    pointer-events: none;
+    dominant-baseline: middle;
+}
+.km-node-source ~ .km-node-label { fill: #fff; }
+
+/* ---- Side panel ---- */
+.km-panel {
+    flex: 0 0 320px;
+    border-left: 1px solid var(--color-border);
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: var(--space-md);
+}
+
+.km-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+}
+
+.km-panel-title {
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.km-panel-close {
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+}
+.km-panel-close:hover { color: var(--color-text); }
+
+/* Action buttons — deliberately squared & filled to read as actions, distinct
+   from the pill-shaped deck chips above. Separated by a divider line. */
+.km-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.km-detach-btn {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-muted);
+    color: var(--color-text);
+    border-radius: var(--radius-sm);
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+.km-detach-btn:hover { background: var(--color-bg-hover); }
+
+.km-panel-hint {
+    margin: var(--space-md) 0 var(--space-sm);
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+}
+
+.km-parent-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.km-panel-decks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+.km-panel-cardhead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+}
+
+/* Deck filter chips scoped to the Cards list in the tag panel — separate from
+   the tag's own deck-assignment chips (.km-panel-decks) above. */
+.km-panel-cardfilter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: -4px;
+}
+
+.km-card-add {
+    border: 1px solid var(--color-border);
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: var(--radius-md);
+    width: 26px;
+    height: 26px;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+.km-card-add:hover { opacity: 0.9; }
+
+.km-parent-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-subtle);
+}
+
+.km-parent-name {
+    font-size: 0.85rem;
+}
+
+/* Clickable parent/child name — navigates to that tag on the map. */
+.km-rel-link {
+    flex: 1 1 auto;
+    text-align: left;
+    border: none;
+    background: transparent;
+    color: var(--color-text);
+    padding: 0;
+    font-size: 0.85rem;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.km-rel-link:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.km-parent-detach {
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+.km-parent-detach:hover { color: var(--color-danger); }
+
+.km-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.km-card-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+}
+.km-card-row:hover { background: var(--color-bg-hover); }
+
+/* Order-number gutter: one number per selected tag, stacked. */
+.km-card-nums {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: stretch;
+}
+
+.km-card-pos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.4rem;
+    padding: 1px 4px;
+    border-radius: var(--radius-sm, 4px);
+    background: var(--color-bg-hover);
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.3;
+}
+
+.km-card-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.km-card-deck {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.km-card-name {
+    font-size: 0.92rem;
+    color: var(--color-text);
+}

@@ -1,0 +1,141 @@
+/* ==========================================================================
+   Media import overlay — shown while a picked image/audio/video/file is
+   copied into the library. The copy is opaque (no byte progress from the
+   OS copy or the upload), so the bar is deliberately indeterminate and an
+   elapsed counter carries the "still working" signal instead.
+   ========================================================================== */
+
+.media-import-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 12, 18, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    animation: media-import-fade 0.18s ease-out;
+}
+
+@keyframes media-import-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.media-import-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    width: min(360px, calc(100vw - 2 * var(--space-lg)));
+    padding: var(--space-xl) var(--space-lg) var(--space-lg);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    animation: media-import-rise 0.22s ease-out;
+}
+
+@keyframes media-import-rise {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* Glyph tile with a pulsing halo — the "something is happening" anchor. */
+.media-import-glyph {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-lg);
+    background: var(--tag-chip-bg);
+    color: var(--color-primary);
+    font-size: 1.7rem;
+    line-height: 1;
+}
+
+.media-import-glyph::before,
+.media-import-glyph::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1.5px solid var(--color-primary);
+    animation: media-import-halo 2s ease-out infinite;
+}
+
+.media-import-glyph::after { animation-delay: 1s; }
+
+@keyframes media-import-halo {
+    0%   { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 0;   transform: scale(1.45); }
+}
+
+.media-import-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.media-import-hint {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--color-text-muted);
+}
+
+.media-import-track {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-muted);
+    overflow: hidden;
+}
+
+.media-import-track::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    width: 38%;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--color-primary) 30%,
+        var(--color-primary) 70%,
+        transparent
+    );
+    animation: media-import-slide 1.3s ease-in-out infinite;
+}
+
+@keyframes media-import-slide {
+    0%   { left: -38%; }
+    100% { left: 100%; }
+}
+
+.media-import-elapsed {
+    margin: 0;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-muted);
+    opacity: 0.85;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .media-import-overlay,
+    .media-import-card { animation: none; }
+    .media-import-glyph::before,
+    .media-import-glyph::after { animation-duration: 4s; }
+    .media-import-track::after {
+        animation: none;
+        left: 0;
+        width: 100%;
+        opacity: 0.6;
+    }
+}

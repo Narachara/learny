@@ -1,0 +1,9 @@
+[package]
+name = "ports"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+domain_flashcard = { path = "../domain/flashcard" }
+domain_tagging   = { path = "../domain/tagging" }
+domain_auth      = { path = "../domain/auth" }

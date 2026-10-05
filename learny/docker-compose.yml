@@ -1,0 +1,68 @@
+services:
+
+  # ---------------------------------------------------------------------------
+  # learny-web — Axum REST API + static file server
+  # ---------------------------------------------------------------------------
+  app:
+    # Local development: build from source.
+    # Production (server): comment out `build` and set image to the loaded tag.
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: learny-app:latest
+    restart: unless-stopped
+    # Not exposed to the host — only reachable by Caddy on the internal network.
+    expose:
+      - "3000"
+    volumes:
+      - learny-data:/data
+      # Uploaded media lives on the attached block volume, not on the droplet's
+      # own disk: it is the part that grows, and it is read far more than it is
+      # written. cards.db stays on local NVMe, where its fsyncs are cheap.
+      - media:/data/files
+    environment:
+      DATA_DIR: /data
+      DIST_DIR: /app/dist
+      PORT: "3000"
+
+  # ---------------------------------------------------------------------------
+  # Caddy — reverse proxy (+ automatic HTTPS when a real domain is configured)
+  # ---------------------------------------------------------------------------
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3 (QUIC)
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data            # stores TLS certificates
+      - caddy-config:/config        # stores Caddy runtime config
+      - learny-data:/srv/data:ro    # read-only access to uploaded files for direct serving
+      - media:/srv/data/files:ro    # ...and the media that now lives off-volume
+    depends_on:
+      - app
+
+# ---------------------------------------------------------------------------
+# Volumes
+# ---------------------------------------------------------------------------
+volumes:
+  learny-data:   # SQLite DB (and anything else the app writes to /data)
+  caddy-data:    # TLS certificates (persisted across restarts)
+  caddy-config:  # Caddy config cache
+
+  # Uploaded images, audio and video, on the DigitalOcean block volume.
+  #
+  # Deliberately a bind-backed volume rather than a plain `- /mnt/...:/data/files`
+  # bind mount: if the block volume ever fails to attach, this refuses to start,
+  # where a plain bind would quietly create an empty directory and bring the app
+  # up with every piece of media missing.
+  #
+  # Local development has no such volume — comment this block's driver_opts out
+  # (leaving `media:`) to fall back to an ordinary named volume.
+  media:
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/volume_fra1_1789384311913/learny/files

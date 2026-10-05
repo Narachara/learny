@@ -1,0 +1,391 @@
+/* ==========================================================================
+   Deck list page
+   ========================================================================== */
+
+/* Fills whatever width `.page` gives it: ~4 decks per row on a laptop,
+   5–6 on a wide monitor. */
+.deck-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-lg);
+}
+
+.deck-card {
+    background: var(--color-bg-subtle);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    padding: 0 0 var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm), inset 3px 0 0 color-mix(in srgb, var(--color-success) 48%, transparent);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.deck-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--color-primary);
+}
+
+.deck-card .deck-main,
+.deck-card .deck-actions {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+}
+
+/* Cover image area */
+.deck-cover-area {
+    position: relative;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.deck-cover {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 7;
+    object-fit: cover;
+}
+
+.deck-cover-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 7;
+    background:
+        radial-gradient(circle at 78% 45%, transparent 0 25px, color-mix(in srgb, var(--color-primary) 13%, transparent) 26px 31px, transparent 32px),
+        linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-bg-subtle) 100%);
+}
+
+/* Hover overlay — cover action buttons */
+.deck-cover-actions {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    justify-content: space-between;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+}
+
+.deck-cover-area:hover .deck-cover-actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.deck-cover-btn {
+    appearance: none;
+    border: none;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition: background 0.12s ease;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.deck-cover-btn:hover {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+/* Deck name */
+.deck-main {
+    appearance: none;
+    border: none;
+    background: transparent;
+    text-align: left;
+    width: 100%;
+    padding: var(--space-sm) 0 var(--space-xs);
+    cursor: pointer;
+    color: var(--color-text);
+    transition: color 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.deck-main:hover { color: var(--color-primary); }
+
+.deck-name {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-size: 1.18rem;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+}
+
+.deck-card-count {
+    font-size: 0.76rem;
+    font-weight: 550;
+    color: var(--color-text-muted);
+}
+
+/* Action buttons */
+.deck-actions {
+    display: flex;
+    gap: var(--space-xs);
+    padding-top: var(--space-xs);
+}
+
+.deck-action-btn {
+    appearance: none;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-muted);
+    border-radius: var(--radius-sm);
+    padding: 5px 10px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.deck-action-btn:hover {
+    background: var(--color-bg-muted);
+    border-color: var(--color-text-muted);
+    color: var(--color-text);
+}
+
+.deck-action-btn.danger {
+    color: var(--color-danger);
+    border-color: transparent;
+}
+
+.deck-action-btn.danger:hover {
+    background: var(--color-danger-bg);
+    border-color: var(--color-danger);
+}
+
+/* ==========================================================================
+   Deck page toolbar
+   ========================================================================== */
+
+.deckpage-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1600px;
+    margin: 0 auto var(--space-lg);
+    padding: var(--space-sm) var(--space-md);
+    /* Stay pinned below the tab strip + navbar while the deck grid scrolls. */
+    position: sticky;
+    top: calc(var(--tab-strip-h) + var(--navbar-h));
+    z-index: 90;
+    background: var(--color-bg);
+    background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.deckpage-toolbar-left,
+.deckpage-toolbar-right {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: center;
+}
+
+.toolbar-icon-btn {
+    appearance: none;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-subtle);
+    color: var(--color-text-muted);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.toolbar-icon-btn:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-text-muted);
+    color: var(--color-text);
+}
+
+.toolbar-icon-btn-active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+
+.toolbar-icon-btn-active:hover {
+    background: var(--color-primary-dark, var(--color-primary));
+    border-color: var(--color-primary-dark, var(--color-primary));
+    color: #fff;
+}
+
+/* ==========================================================================
+   Global card search panel
+   ========================================================================== */
+
+.deck-search-panel {
+    max-width: 1600px;
+    margin: 0 auto var(--space-lg);
+    padding: var(--space-md);
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-text) 8%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.deck-search-input-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.deck-search-input {
+    flex: 1;
+    padding: 9px var(--space-md);
+    font-size: 0.95rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.deck-search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-shadow);
+}
+
+.deck-search-spinner {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   Global tag filter panel
+   ========================================================================== */
+
+.deck-tag-filter-panel {
+    max-width: 1600px;
+    margin: 0 auto var(--space-lg);
+    padding: var(--space-md) var(--space-md);
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.tag-filter-hint {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.tag-search-input {
+    width: 100%;
+    padding: 7px var(--space-md);
+    font-size: 0.88rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    outline: none;
+    margin-bottom: var(--space-sm);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tag-search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-shadow);
+}
+
+.tag-filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+}
+
+.tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: var(--tag-chip-bg);
+    color: var(--tag-chip-text);
+    border-radius: var(--radius-pill);
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+.tag-filter-chips .tag-chip {
+    appearance: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.tag-filter-chips .tag-chip:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.tag-chip-selected {
+    background: var(--color-primary) !important;
+    color: #fff !important;
+    border-color: var(--color-primary) !important;
+}
+
+/* Filtered cards list */
+.tag-filtered-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: var(--space-sm);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.tag-filtered-card-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.tag-filtered-card-row:hover {
+    background: var(--color-bg-hover);
+}
+
+.tag-filtered-card-deck {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    min-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tag-filtered-card-name {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

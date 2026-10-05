@@ -1,0 +1,30 @@
+# =============================================================================
+# Caddyfile
+# =============================================================================
+# Development / LAN (HTTP only):
+#   Leave as-is — serves on port 80.
+#
+# Production with a real domain (automatic HTTPS via Let's Encrypt):
+#   Replace ":80" with your domain, e.g.:
+#       learn.example.com {
+#           reverse_proxy app:3000
+#       }
+#   Caddy will obtain and renew TLS certificates automatically.
+# =============================================================================
+# 
+
+local :80 {
+    # Serve uploaded user files (images, audio, video) directly from disk —
+    # no round-trip through the Axum process, with a 1-year immutable cache.
+    # The learny-data volume is mounted read-only at /srv/data in this container.
+    handle /files/* {
+        root * /srv/data
+        file_server
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # Everything else (API + WASM frontend) goes to the Axum app.
+    reverse_proxy app:3000 {
+        header_up X-Real-IP {remote_host}
+    }
+}

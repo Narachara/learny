@@ -1,0 +1,25 @@
+# Rust build artifacts — except the pre-built WASM we need
+target/
+!target/dx/ui/release/web/public
+
+# Tauri app — only the Cargo.toml is needed for workspace resolution
+tauri/
+!tauri/Cargo.toml
+
+# UI source — only the Cargo.toml is needed; WASM is pre-built
+ui/
+!ui/Cargo.toml
+
+# Git / editor
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Misc
+*.md

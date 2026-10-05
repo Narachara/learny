@@ -1,0 +1,53 @@
+.find-bar {
+    position: fixed;
+    top: calc(var(--tab-strip-h) + var(--navbar-h) + 8px);
+    right: 16px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 6px 8px;
+    box-shadow: var(--shadow-md);
+}
+
+.find-bar-input {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-subtle);
+    color: var(--color-text);
+    padding: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+    width: 200px;
+}
+.find-bar-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+.find-bar-empty {
+    border-color: var(--color-danger);
+}
+
+.find-bar-btn {
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    width: 26px;
+    height: 26px;
+    font-size: 0.8rem;
+    line-height: 1;
+    border-radius: var(--radius-sm);
+}
+.find-bar-btn:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-text);
+}
+
+/* Matches painted by the CSS Custom Highlight API (see highlight_all in find_bar.rs) */
+::highlight(find-match) {
+    background-color: #ffdf3f;
+    color: #1a1a1a;
+}
