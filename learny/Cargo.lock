@@ -3256,6 +3256,7 @@ dependencies = [
  "tauri-plugin-dialog",
  "tauri-plugin-fs-adapter",
  "urlencoding",
+ "wry",
 ]
 
 [[package]]

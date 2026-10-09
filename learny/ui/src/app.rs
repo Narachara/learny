@@ -196,8 +196,6 @@ fn AppShell(
     let tabs = use_signal(|| vec![0usize]);
     let active = use_signal(|| 0usize);
     let next_id = use_signal(|| 1usize);
-    // User-given tab names, keyed by tab id. Missing → falls back to "Tab N".
-    let tab_names = use_signal(std::collections::HashMap::<usize, String>::new);
 
     // Make tab state reachable from any page (e.g. to open related cards in a new tab).
     use_context_provider(|| TabsCtx { tabs, active, next_id });
@@ -229,7 +227,7 @@ fn AppShell(
 
         Navbar { active }
 
-        TabStrip { tabs, active, next_id, tab_names }
+        TabStrip { tabs, active, next_id }
 
         FindBar {}
 

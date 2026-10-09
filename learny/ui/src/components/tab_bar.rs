@@ -1,5 +1,4 @@
 use std::rc::Rc;
-use std::collections::HashMap;
 use dioxus::prelude::*;
 use dioxus::history::{History, MemoryHistory};
 use dioxus::router::components::HistoryProvider;
@@ -36,7 +35,6 @@ pub fn TabStrip(
     tabs: Signal<Vec<usize>>,
     active: Signal<usize>,
     next_id: Signal<usize>,
-    tab_names: Signal<HashMap<usize, String>>,
 ) -> Element {
     let current = *active.read();
     let multiple = tabs.read().len() > 1;
@@ -46,31 +44,21 @@ pub fn TabStrip(
             for (pos, id) in tabs.read().iter().copied().enumerate() {
                 {
                     let is_active = id == current;
-                    // Manual rename wins; otherwise show the content-derived title.
-                    let name = tab_names.read().get(&id).filter(|s| !s.is_empty()).cloned()
-                        .or_else(|| TAB_TITLES.read().get(&id).cloned())
-                        .unwrap_or_default();
+                    let name = TAB_TITLES.read().get(&id).cloned()
+                        .unwrap_or_else(|| format!("Tab {}", pos + 1));
                     rsx! {
                         div {
                             key: "{id}",
                             class: if is_active { "tab-item tab-item-active" } else { "tab-item" },
                             onclick: move |_| active.set(id),
-                            input {
-                                class: "tab-item-label",
-                                value: "{name}",
-                                placeholder: "Tab {pos + 1}",
-                                // Clicking the field focuses the tab too, so editing
-                                // never happens on a tab you can't see.
-                                onclick: move |_| active.set(id),
-                                oninput: move |e| { tab_names.write().insert(id, e.value()); },
-                            }
+                            span { class: "tab-item-label", title: "{name}", "{name}" }
                             if multiple {
                                 button {
                                     class: "tab-item-close",
                                     title: "Close tab",
                                     onclick: move |e: Event<MouseData>| {
                                         e.stop_propagation();
-                                        close_tab(tabs, active, tab_names, id);
+                                        close_tab(tabs, active, id);
                                     },
                                     "×"
                                 }
@@ -99,7 +87,6 @@ pub fn TabStrip(
 fn close_tab(
     mut tabs: Signal<Vec<usize>>,
     mut active: Signal<usize>,
-    mut tab_names: Signal<HashMap<usize, String>>,
     id: usize,
 ) {
     let mut list = tabs.write();
@@ -110,7 +97,6 @@ fn close_tab(
         return;
     };
     list.remove(idx);
-    tab_names.write().remove(&id);
     TAB_TITLES.write().remove(&id);
     if *active.read() == id {
         // Focus the tab that slid into this slot, else the previous one.
