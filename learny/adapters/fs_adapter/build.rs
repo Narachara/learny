@@ -1,4 +1,4 @@
-const COMMANDS: &[&str] = &["pick_image", "pick_archive", "pick_audio", "pick_video"];
+const COMMANDS: &[&str] = &["pick_image", "pick_archive", "pick_audio", "pick_video", "save_recording"];
 
 fn main() {
   tauri_plugin::Builder::new(COMMANDS)

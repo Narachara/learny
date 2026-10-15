@@ -6803,6 +6803,7 @@ dependencies = [
  "dioxus-logger 0.6.2",
  "domain_flashcard",
  "domain_tagging",
+ "futures-channel",
  "gloo-net",
  "gloo-timers",
  "js-sys",

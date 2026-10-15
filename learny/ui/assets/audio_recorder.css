@@ -1,0 +1,35 @@
+/* ==========================================================================
+   Audio recorder overlay — reuses the media-import card and glyph tile; the
+   halo is tinted red and only pulses while the microphone is live.
+   ========================================================================== */
+
+.media-import-glyph.recorder-live {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+}
+
+.media-import-glyph.recorder-live::before,
+.media-import-glyph.recorder-live::after {
+    border-color: var(--color-danger);
+}
+
+.media-import-glyph.recorder-idle::before,
+.media-import-glyph.recorder-idle::after {
+    animation: none;
+    opacity: 0;
+}
+
+.recorder-title {
+    font-variant-numeric: tabular-nums;
+    white-space: pre;
+}
+
+.recorder-actions {
+    display: flex;
+    gap: var(--space-md);
+    min-height: 32px;
+}
+
+.recorder-stop {
+    color: var(--color-danger);
+}

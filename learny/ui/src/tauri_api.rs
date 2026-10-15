@@ -24,6 +24,15 @@ extern "C" {
         catch
     )]
     async fn invoke_raw_catch(cmd: &str, args: JsValue) -> Result<JsValue, JsValue>;
+
+    // Invoke with an options object (headers) — needed for raw binary bodies,
+    // which carry no named arguments.
+    #[wasm_bindgen(
+        js_namespace = ["window", "__TAURI__", "core"],
+        js_name = invoke,
+        catch
+    )]
+    async fn invoke_with_options(cmd: &str, args: JsValue, options: JsValue) -> Result<JsValue, JsValue>;
 }
 
 async fn tauri<T, A>(cmd: &str, args: A) -> T
@@ -445,6 +454,25 @@ pub async fn pick_archive() -> String {
     // caller's upload overlay would spin with nothing left to clear it.
     let ret: Result<Option<FileResponse>, _> = tauri_try("plugin:fs-adapter|pick_archive", ()).await;
     ret.ok().flatten().map(|r| r.path).unwrap_or_default()
+}
+
+/// Stores a microphone recording in app data.
+/// Returns the virtual path (e.g. "files/uuid.m4a"), or empty string on failure.
+pub async fn save_recording(recording: crate::recorder::Recording) -> String {
+    let Ok(buf) = wasm_bindgen_futures::JsFuture::from(recording.blob.array_buffer()).await else {
+        return String::new();
+    };
+    // A Uint8Array argument makes Tauri send the bytes as a raw body.
+    let body = js_sys::Uint8Array::new(&buf);
+    let headers = js_sys::Object::new();
+    let options = js_sys::Object::new();
+    let _ = js_sys::Reflect::set(&headers, &"x-ext".into(), &recording.ext.into());
+    let _ = js_sys::Reflect::set(&options, &"headers".into(), &headers);
+    let ret = invoke_with_options("plugin:fs-adapter|save_recording", body.into(), options.into()).await;
+    ret.ok()
+        .and_then(|raw| serde_wasm_bindgen::from_value::<FileResponse>(raw).ok())
+        .map(|r| r.path)
+        .unwrap_or_default()
 }
 
 #[derive(Serialize)]

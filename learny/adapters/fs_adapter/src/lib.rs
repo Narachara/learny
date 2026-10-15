@@ -40,7 +40,8 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
       commands::pick_image,
       commands::pick_audio,
       commands::pick_video,
-      commands::pick_archive
+      commands::pick_archive,
+      commands::save_recording
     ])
     .setup(|app, api| {
       let adapter = desktop::init(app, api)?;

@@ -39,3 +39,6 @@ pub use find_bar::FindBar;
 
 pub mod media_upload_overlay;
 pub use media_upload_overlay::MediaUploadOverlay;
+
+pub mod audio_recorder;
+pub use audio_recorder::{AudioRecorderOverlay, MicIcon};

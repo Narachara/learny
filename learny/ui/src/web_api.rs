@@ -405,6 +405,23 @@ pub async fn pick_archive() -> String {
     pick_file(".zip,application/zip", "/api/files/upload").await
 }
 
+/// Upload a microphone recording; returns virtual path or "".
+pub async fn save_recording(recording: crate::recorder::Recording) -> String {
+    // The server derives the stored extension from the part's filename.
+    let form = web_sys::FormData::new().unwrap();
+    let name = format!("recording.{}", recording.ext);
+    if form.append_with_blob_and_filename("file", &recording.blob, &name).is_err() {
+        return String::new();
+    }
+    let Ok(resp) = Request::post("/api/files/upload").body(form).unwrap().send().await else {
+        return String::new();
+    };
+
+    #[derive(serde::Deserialize)]
+    struct UploadResp { path: String }
+    resp.json::<UploadResp>().await.map(|r| r.path).unwrap_or_default()
+}
+
 async fn pick_file(accept: &str, endpoint: &str) -> String {
     use wasm_bindgen::prelude::*;
     use wasm_bindgen_futures::JsFuture;

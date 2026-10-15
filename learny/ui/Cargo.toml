@@ -14,11 +14,12 @@ dioxus-logger     = "0.6"
 wasm-bindgen      = "0.2"
 wasm-bindgen-futures = "0.4"
 gloo-timers       = { version = "0.3", features = ["futures"] }
-web-sys           = { version = "0.3", features = ["Blob", "BlobPropertyBag", "HtmlAnchorElement", "Url", "Window", "Navigator", "Clipboard", "Document", "Element", "EventTarget", "KeyboardEvent", "DomRect"] }
+web-sys           = { version = "0.3", features = ["Blob", "BlobPropertyBag", "HtmlAnchorElement", "Url", "Window", "Navigator", "Clipboard", "Document", "Element", "EventTarget", "KeyboardEvent", "DomRect", "MediaDevices", "MediaStream", "MediaStreamConstraints", "MediaStreamTrack", "MediaRecorder", "MediaRecorderOptions", "RecordingState", "BlobEvent"] }
 js-sys            = "0.3"
 serde             = { version = "1", features = ["derive"] }
 serde-wasm-bindgen = "0.6"
 serde_json        = "1"
+futures-channel   = "0.3"
 domain_flashcard  = { path = "../domain/flashcard" }
 domain_tagging    = { path = "../domain/tagging" }
 chrono            = "0.4.42"

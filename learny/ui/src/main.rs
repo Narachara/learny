@@ -1,6 +1,7 @@
 mod components;
 mod app;
 pub mod api;
+mod recorder;
 
 #[cfg(feature = "tauri")]
 mod tauri_api;

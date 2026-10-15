@@ -1,6 +1,7 @@
 use domain_flashcard::*;
 use dioxus::prelude::*;
 use crate::api::{delete_block_from_app_data};
+use crate::components::MicIcon;
 use crate::components::block_view::{image_url_from_virtual_path, MarkdownBlock};
 
 /// Display widths offered for an image block, as a percentage of its container.
@@ -12,6 +13,8 @@ pub enum InsertBlockKind {
     Text,
     Image,
     Audio,
+    /// Record from the microphone into a new audio block.
+    Record,
     Video,
     File,
 }
@@ -31,6 +34,7 @@ pub fn BlockEditor(
                 button { title: "Insert text",  onclick: move |_| handler.call(InsertBlockKind::Text),  "T" }
                 button { title: "Insert image", onclick: move |_| handler.call(InsertBlockKind::Image), "⬚" }
                 button { title: "Insert audio", onclick: move |_| handler.call(InsertBlockKind::Audio), "♪" }
+                button { title: "Record audio", onclick: move |_| handler.call(InsertBlockKind::Record), MicIcon {} }
                 button { title: "Insert video", onclick: move |_| handler.call(InsertBlockKind::Video), "▶" }
                 button { title: "Insert file",  onclick: move |_| handler.call(InsertBlockKind::File),  "⊟" }
             }

@@ -118,4 +118,30 @@ Denies the pick_video command without any pre-configured scope.
 
 </td>
 </tr>
+
+<tr>
+<td>
+
+`fs-adapter:allow-save-recording`
+
+</td>
+<td>
+
+Enables the save_recording command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`fs-adapter:deny-save-recording`
+
+</td>
+<td>
+
+Denies the save_recording command without any pre-configured scope.
+
+</td>
+</tr>
 </table>

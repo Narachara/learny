@@ -29,6 +29,11 @@ fn copy_for(kind: InsertBlockKind) -> (&'static str, &'static str, &'static str)
             "Adding file",
             "Pick a file, then it is copied into your library.",
         ),
+        InsertBlockKind::Record => (
+            "♪",
+            "Saving recording",
+            "The recording is being copied into your library.",
+        ),
         // Text blocks never reach the overlay (they are created instantly).
         InsertBlockKind::Text => ("T", "Adding block", "One moment…"),
     }

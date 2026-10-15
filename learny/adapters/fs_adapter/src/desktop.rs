@@ -185,6 +185,30 @@ impl<R: Runtime> FsAdapter<R> {
     pub async fn pick_archive(&self) -> crate::Result<Option<FileResponse>> {
         self.pick_file(PickKind::Archive).await
     }
+
+    /// Writes recorded audio bytes into app data. Only the containers the
+    /// webview's MediaRecorder can produce are accepted, so the extension
+    /// can't be used to smuggle an arbitrary file name in.
+    pub async fn save_recording(
+        &self,
+        bytes: Vec<u8>,
+        ext: &str,
+    ) -> crate::Result<FileResponse> {
+        if !matches!(ext, "m4a" | "webm" | "ogg") {
+            return Err(crate::Error::StringError(format!("unsupported recording format: {ext:?}")));
+        }
+
+        let files_dir = self.0.path().app_data_dir()?.join("files");
+        fs::create_dir_all(&files_dir)?;
+
+        let file_name = format!("{}.{}", Uuid::new_v4(), ext);
+        let target_path = files_dir.join(&file_name);
+        tauri::async_runtime::spawn_blocking(move || fs::write(&target_path, bytes))
+            .await
+            .map_err(tauri::Error::from)??;
+
+        Ok(FileResponse { path: format!("files/{}", file_name) })
+    }
     
 
     pub async fn pick_import_file(
