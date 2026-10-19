@@ -8,6 +8,7 @@
     "fs-adapter:allow-pick-archive",
     "fs-adapter:allow-pick-video",
     "fs-adapter:allow-pick-audio",
-    "fs-adapter:allow-save-recording"
+    "fs-adapter:allow-save-recording",
+    "fs-adapter:allow-record-screen"
   ]
 }

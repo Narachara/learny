@@ -34,6 +34,11 @@ fn copy_for(kind: InsertBlockKind) -> (&'static str, &'static str, &'static str)
             "Saving recording",
             "The recording is being copied into your library.",
         ),
+        InsertBlockKind::ScreenRecord => (
+            "▶",
+            "Saving screen recording",
+            "The compact video is being added to your library.",
+        ),
         // Text blocks never reach the overlay (they are created instantly).
         InsertBlockKind::Text => ("T", "Adding block", "One moment…"),
     }

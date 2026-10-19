@@ -122,6 +122,32 @@ Denies the pick_video command without any pre-configured scope.
 <tr>
 <td>
 
+`fs-adapter:allow-record-screen`
+
+</td>
+<td>
+
+Enables the record_screen command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`fs-adapter:deny-record-screen`
+
+</td>
+<td>
+
+Denies the record_screen command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
 `fs-adapter:allow-save-recording`
 
 </td>

@@ -31,6 +31,11 @@ pub(crate) async fn pick_archive<R: Runtime>(
     app.fs_adapter().pick_archive().await
 }
 
+#[tauri::command]
+pub(crate) async fn record_screen<R: Runtime>(app: AppHandle<R>) -> crate::Result<Option<FileResponse>> {
+    app.fs_adapter().record_screen().await
+}
+
 /// Stores an in-app microphone recording. The audio arrives as the raw IPC
 /// body (no JSON number-array round trip); its container extension rides in
 /// the `x-ext` header since a raw body has no room for named arguments.

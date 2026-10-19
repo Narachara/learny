@@ -343,6 +343,18 @@
           "markdownDescription": "Denies the pick_video command without any pre-configured scope."
         },
         {
+          "description": "Enables the record_screen command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-record-screen",
+          "markdownDescription": "Enables the record_screen command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the record_screen command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-record-screen",
+          "markdownDescription": "Denies the record_screen command without any pre-configured scope."
+        },
+        {
           "description": "Enables the save_recording command without any pre-configured scope.",
           "type": "string",
           "const": "allow-save-recording",

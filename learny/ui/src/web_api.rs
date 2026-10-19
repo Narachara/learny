@@ -400,6 +400,11 @@ pub async fn pick_video() -> String {
     pick_file("video/*,.mp4,.mov,.m4v,.webm", "/api/files/upload").await
 }
 
+/// The native area selector is deliberately desktop-only for now.
+pub async fn record_screen() -> Result<String, String> {
+    Err("Screen recording is available in the Learny desktop app only.".into())
+}
+
 /// Pick a zip archive from the browser and upload it; returns virtual path or "".
 pub async fn pick_archive() -> String {
     pick_file(".zip,application/zip", "/api/files/upload").await

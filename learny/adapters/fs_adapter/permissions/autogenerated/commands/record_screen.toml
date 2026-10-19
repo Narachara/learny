@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-record-screen"
+description = "Enables the record_screen command without any pre-configured scope."
+commands.allow = ["record_screen"]
+
+[[permission]]
+identifier = "deny-record-screen"
+description = "Denies the record_screen command without any pre-configured scope."
+commands.deny = ["record_screen"]

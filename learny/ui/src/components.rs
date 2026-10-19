@@ -42,3 +42,6 @@ pub use media_upload_overlay::MediaUploadOverlay;
 
 pub mod audio_recorder;
 pub use audio_recorder::{AudioRecorderOverlay, MicIcon};
+
+pub mod screen_recorder;
+pub use screen_recorder::{ScreenRecorderOverlay, ScreenRecordIcon};

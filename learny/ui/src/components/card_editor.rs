@@ -6,7 +6,7 @@ use crate::components::block_editor::InsertBlockKind;
 
 static CSS: Asset = asset!("/assets/card_editor.css");
 static BLOCKS_CSS: Asset = asset!("/assets/blocks.css");
-use crate::components::{AudioRecorderOverlay, BlockEditor, MediaUploadOverlay, MicIcon};
+use crate::components::{AudioRecorderOverlay, BlockEditor, MediaUploadOverlay, MicIcon, ScreenRecorderOverlay, ScreenRecordIcon};
 use crate::recorder::Recording;
 use futures_channel::oneshot;
 use crate::app::Route;
@@ -30,11 +30,13 @@ use crate::api::{
 
 /// Where an open recorder overlay sends its take; Some while it is shown.
 type RecorderReply = Signal<Option<oneshot::Sender<Option<Recording>>>>;
+type ScreenRecorderReply = Signal<Option<oneshot::Sender<Option<String>>>>;
 
 async fn create_block(
     kind: InsertBlockKind,
     mut uploading: Signal<Option<InsertBlockKind>>,
     mut recorder: RecorderReply,
+    mut screen_recorder: ScreenRecorderReply,
 ) -> Option<Block> {
     match kind {
         InsertBlockKind::Text => return Some(Block::Text { value: "".into() }),
@@ -47,11 +49,16 @@ async fn create_block(
             uploading.set(None);
             return (!path.is_empty()).then(|| Block::Audio { src: path });
         }
+        InsertBlockKind::ScreenRecord => {
+            let (tx, rx) = oneshot::channel();
+            screen_recorder.set(Some(tx));
+            return rx.await.ok().flatten().map(|src| Block::Video { src });
+        }
         _ => {}
     }
     uploading.set(Some(kind));
     let block = match kind {
-        InsertBlockKind::Text | InsertBlockKind::Record => unreachable!(),
+        InsertBlockKind::Text | InsertBlockKind::Record | InsertBlockKind::ScreenRecord => unreachable!(),
         InsertBlockKind::Image => {
             let path = pick_image().await;
             (!path.is_empty()).then(|| Block::Image { src: path, scale: None })
@@ -161,6 +168,7 @@ pub fn CardEditorPanel(mode: EditorMode, on_saved: EventHandler<i64>) -> Element
     let mut suggestion_active_idx: Signal<Option<usize>> = use_signal(|| None);
     let mut uploading: Signal<Option<InsertBlockKind>> = use_signal(|| None);
     let mut recorder: RecorderReply = use_signal(|| None);
+    let mut screen_recorder: ScreenRecorderReply = use_signal(|| None);
     // A tag's position within its own progression (lower = earlier), keyed
     // by lowercase tag name so it survives the chip being a plain String.
     // Stored as the raw text the user typed (not a parsed i64) so a
@@ -225,6 +233,13 @@ pub fn CardEditorPanel(mode: EditorMode, on_saved: EventHandler<i64>) -> Element
             AudioRecorderOverlay {
                 on_done: move |take| {
                     if let Some(tx) = recorder.write().take() { let _ = tx.send(take); }
+                },
+            }
+        }
+        if screen_recorder.read().is_some() {
+            ScreenRecorderOverlay {
+                on_done: move |path| {
+                    if let Some(tx) = screen_recorder.write().take() { let _ = tx.send(path); }
                 },
             }
         }
@@ -423,7 +438,7 @@ pub fn CardEditorPanel(mode: EditorMode, on_saved: EventHandler<i64>) -> Element
                     move |kind| {
                         let mut front_blocks = front_blocks.clone();
                         spawn(async move {
-                            if let Some(block) = create_block(kind, uploading, recorder).await {
+                            if let Some(block) = create_block(kind, uploading, recorder, screen_recorder).await {
                                 front_blocks.write().insert(i, block);
                             }
                         });
@@ -435,7 +450,7 @@ pub fn CardEditorPanel(mode: EditorMode, on_saved: EventHandler<i64>) -> Element
                     move |kind| {
                         let mut front_blocks = front_blocks.clone();
                         spawn(async move {
-                            if let Some(block) = create_block(kind, uploading, recorder).await {
+                            if let Some(block) = create_block(kind, uploading, recorder, screen_recorder).await {
                                 front_blocks.write().insert(i + 1, block);
                             }
                         });
@@ -479,12 +494,23 @@ pub fn CardEditorPanel(mode: EditorMode, on_saved: EventHandler<i64>) -> Element
                 class: "icon-btn", title: "Record audio block",
                 onclick: move |_| {
                     spawn(async move {
-                        if let Some(block) = create_block(InsertBlockKind::Record, uploading, recorder).await {
+                        if let Some(block) = create_block(InsertBlockKind::Record, uploading, recorder, screen_recorder).await {
                             front_blocks.write().push(block);
                         }
                     });
                 },
                 MicIcon {}
+            }
+            button {
+                class: "icon-btn", title: "Record screen area with microphone",
+                onclick: move |_| {
+                    spawn(async move {
+                        if let Some(block) = create_block(InsertBlockKind::ScreenRecord, uploading, recorder, screen_recorder).await {
+                            front_blocks.write().push(block);
+                        }
+                    });
+                },
+                ScreenRecordIcon {}
             }
             button {
                 class: "icon-btn", title: "Add video block",
@@ -538,7 +564,7 @@ pub fn CardEditorPanel(mode: EditorMode, on_saved: EventHandler<i64>) -> Element
                     move |kind| {
                         let mut back_blocks = back_blocks.clone();
                         spawn(async move {
-                            if let Some(block) = create_block(kind, uploading, recorder).await {
+                            if let Some(block) = create_block(kind, uploading, recorder, screen_recorder).await {
                                 back_blocks.write().insert(i, block);
                             }
                         });
@@ -550,7 +576,7 @@ pub fn CardEditorPanel(mode: EditorMode, on_saved: EventHandler<i64>) -> Element
                     move |kind| {
                         let mut back_blocks = back_blocks.clone();
                         spawn(async move {
-                            if let Some(block) = create_block(kind, uploading, recorder).await {
+                            if let Some(block) = create_block(kind, uploading, recorder, screen_recorder).await {
                                 back_blocks.write().insert(i + 1, block);
                             }
                         });
@@ -594,12 +620,23 @@ pub fn CardEditorPanel(mode: EditorMode, on_saved: EventHandler<i64>) -> Element
                 class: "icon-btn", title: "Record audio block",
                 onclick: move |_| {
                     spawn(async move {
-                        if let Some(block) = create_block(InsertBlockKind::Record, uploading, recorder).await {
+                        if let Some(block) = create_block(InsertBlockKind::Record, uploading, recorder, screen_recorder).await {
                             back_blocks.write().push(block);
                         }
                     });
                 },
                 MicIcon {}
+            }
+            button {
+                class: "icon-btn", title: "Record screen area with microphone",
+                onclick: move |_| {
+                    spawn(async move {
+                        if let Some(block) = create_block(InsertBlockKind::ScreenRecord, uploading, recorder, screen_recorder).await {
+                            back_blocks.write().push(block);
+                        }
+                    });
+                },
+                ScreenRecordIcon {}
             }
             button {
                 class: "icon-btn", title: "Add video block",

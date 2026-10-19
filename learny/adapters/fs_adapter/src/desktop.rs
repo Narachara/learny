@@ -2,6 +2,8 @@ use serde::de::DeserializeOwned;
 use tauri::{ plugin::PluginApi, AppHandle, Runtime, Manager };
 use std::fs;
 use std::path::{ Path, PathBuf };
+use std::process::Command;
+use std::time::{Duration, Instant, SystemTime};
 use futures::channel::oneshot;
 use tauri_plugin_dialog::{ DialogExt, FileDialogBuilder, FilePath };
 use crate::FileResponse;
@@ -208,6 +210,93 @@ impl<R: Runtime> FsAdapter<R> {
             .map_err(tauri::Error::from)??;
 
         Ok(FileResponse { path: format!("files/{}", file_name) })
+    }
+
+    /// Uses macOS's genuine area/window selection and recording toolbar, then
+    /// converts the result to a compact 960x540 M4V for a card video block.
+    pub async fn record_screen(&self) -> crate::Result<Option<FileResponse>> {
+        #[cfg(not(target_os = "macos"))]
+        return Err(crate::Error::StringError("Screen recording is currently available on macOS only.".into()));
+
+        #[cfg(target_os = "macos")]
+        {
+            let files_dir = self.0.path().app_data_dir()?.join("files");
+            fs::create_dir_all(&files_dir)?;
+            let id = Uuid::new_v4();
+            let raw_name = format!("{id}.recording.mov");
+            let raw_path = files_dir.join(&raw_name);
+            let final_name = format!("{id}.m4v");
+            let final_path = files_dir.join(&final_name);
+            let downloads_dir = self.0.path().download_dir()?;
+            let started_at = SystemTime::now();
+
+            tauri::async_runtime::spawn_blocking(move || -> crate::Result<Option<FileResponse>> {
+                // The toolbar is the only reliable native video selection UI
+                // on current macOS. It saves to the user's configured location
+                // (Downloads here), so we import the newly-created movie below.
+                let mut capture = Command::new("/usr/sbin/screencapture")
+                    .args(["-i", "-J", "video", "-v", "-g", "-U", "-x"])
+                    .arg(&raw_path)
+                    .spawn()
+                    .map_err(|e| crate::Error::StringError(format!("Couldn't start macOS screen recording: {e}")))?;
+
+                // `-U` ignores the output argument. Copy only a movie created
+                // just after this request, and never remove the user's original
+                // Downloads copy. Do not wait on the toolbar launcher: it can
+                // outlive the saved recording and otherwise holds the editor's
+                // insertion task open indefinitely.
+                if fs::metadata(&raw_path).map(|m| m.len()).unwrap_or(0) == 0 {
+                    let deadline = Instant::now() + Duration::from_secs(60 * 60);
+                    let source = loop {
+                        let earliest = started_at.checked_sub(Duration::from_secs(5)).unwrap_or(started_at);
+                        let settled_before = SystemTime::now()
+                            .checked_sub(Duration::from_secs(1))
+                            .unwrap_or(started_at);
+                        let newest = fs::read_dir(&downloads_dir).ok().into_iter().flatten()
+                        .filter_map(|entry| entry.ok())
+                        .filter_map(|entry| {
+                            let path = entry.path();
+                            let ext = path.extension()?.to_str()?.to_ascii_lowercase();
+                            matches!(ext.as_str(), "mov" | "m4v" | "mp4").then_some(path)
+                        })
+                        .filter_map(|path| {
+                            let modified = fs::metadata(&path).ok()?.modified().ok()?;
+                            (modified >= earliest && modified <= settled_before).then_some((modified, path))
+                        })
+                        .max_by_key(|(modified, _)| *modified)
+                        .map(|(_, path)| path);
+                        if let Some(source) = newest { break source; }
+                        if Instant::now() >= deadline {
+                            let _ = capture.kill();
+                            return Ok(None);
+                        }
+                        std::thread::sleep(Duration::from_millis(500));
+                    };
+                    copy_asset(&source, &raw_path)?;
+                    if capture.try_wait()?.is_none() {
+                        let _ = capture.kill();
+                        let _ = capture.wait();
+                    }
+                }
+
+                let converted = Command::new("/usr/bin/avconvert")
+                    .args(["--source"]).arg(&raw_path)
+                    .args(["--preset", "Preset960x540", "--output"]).arg(&final_path)
+                    .args(["--replace", "--disableMetadataFilter"])
+                    .status()
+                    .ok();
+                if !converted.is_some_and(|status| status.success())
+                    || fs::metadata(&final_path).map(|m| m.len()).unwrap_or(0) == 0 {
+                    let _ = fs::remove_file(&final_path);
+                    // A failed optional compression pass must not turn a
+                    // completed recording into a lost take. Keep the movie;
+                    // it remains playable and can be recompressed later.
+                    return Ok(Some(FileResponse { path: format!("files/{raw_name}") }));
+                }
+                let _ = fs::remove_file(&raw_path);
+                Ok(Some(FileResponse { path: format!("files/{final_name}") }))
+            }).await.map_err(tauri::Error::from)?
+        }
     }
     
 

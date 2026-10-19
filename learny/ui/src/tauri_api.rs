@@ -447,6 +447,13 @@ pub async fn pick_video() -> String {
     ret.ok().flatten().map(|r| r.path).unwrap_or_default()
 }
 
+/// Opens the native macOS area/window recorder and returns a compact video.
+pub async fn record_screen() -> Result<String, String> {
+    let ret: Result<Option<FileResponse>, _> = tauri_try("plugin:fs-adapter|record_screen", ()).await;
+    ret.map_err(|e| e.to_string())
+        .map(|recording| recording.map(|r| r.path).unwrap_or_default())
+}
+
 /// Opens a file picker for archives and copies the chosen file into app data.
 /// Returns the virtual path, or empty string if cancelled.
 pub async fn pick_archive() -> String {
